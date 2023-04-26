@@ -1,10 +1,12 @@
 mod galois;
+mod symplectic;
 
 use galois::GF2;
-use num_traits::{One, Zero};
-use nalgebra::{Vector2, DMatrix};
+use nalgebra::*;
+use symplectic::Symplectic;
 
 fn main() {
-    let one: GF2 = 1.into();
-    println!("{}", one);
+    let v1: Vector6<f64> = Vector6::new(1.into(), 1.into(), 1.into(), 1.into(), 1.into(), 1.into());
+    let v2: Vector6<f64> = Vector6::new(1.into(), 1.into(), 1.into(), 1.into(), 1.into(), 1.into());
+    println!("{}", v1.symp(&v2));
 }
