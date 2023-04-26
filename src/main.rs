@@ -1,5 +1,6 @@
 mod fields;
 mod symplectic;
+mod orthogonal;
 
 use fields::GF2;
 use nalgebra::*;
