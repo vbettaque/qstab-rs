@@ -44,10 +44,10 @@ where
         );
 
         let size = self.len() / 2;
-        let a1= self.rows_with_step(0, size, 1);
+        let a1 = self.rows_with_step(0, size, 1);
         let a2 = self.rows_with_step(1, size, 1);
-        let b1= rhs.rows_with_step(0, size, 1);
-        let b2= rhs.rows_with_step(1, size, 1);
+        let b1 = rhs.rows_with_step(0, size, 1);
+        let b2 = rhs.rows_with_step(1, size, 1);
 
         a1.dot(&b2) - a2.dot(&b1)
     }

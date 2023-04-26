@@ -1,7 +1,7 @@
-mod galois;
+mod fields;
 mod symplectic;
 
-use galois::GF2;
+use fields::GF2;
 use nalgebra::*;
 use symplectic::Symplectic;
 
