@@ -1,54 +1,47 @@
-use std::iter::Map;
+use nalgebra::{DimName, allocator::Allocator, DefaultAllocator, OMatrix, OVector};
+use num_traits::Zero;
 
-use nalgebra::{DimName, allocator::Allocator, DefaultAllocator, OMatrix, OVector, U1};
+use crate::{fields::GF2, util::get_odd_bit_iter};
 
-use crate::fields::GF2;
-
-fn group_order(n: u32) -> usize {
+/// Returns the order |O(n, GF2)| of the orthogonal group over GF2 for even n.
+fn get_group_order(n: usize) -> usize {
     assert!(n % 2 == 0);
     
-    let k: u32 = n / 2;
-    let base: usize = 2;
-
-    let mut order = base.pow(k.pow(2));
+    let k = n / 2;
+    let mut order = usize::pow(2, (k*k) as u32);
     for i in 1..k {
-        order *= base.pow(2*i) - 1;
+        order *= usize::pow(4, n as u32) - 1;
     }
     order
 }
 
-/// Returns the D first bits in the binary representation of k 
-pub fn get_bit_vector<D: DimName>(k: usize) -> OVector<GF2, D>
+pub fn get_orthogonal_matrix<D>(i: usize) -> OMatrix::<GF2, D, D>
 where
-    DefaultAllocator: Allocator<GF2, D, U1>
+    D: DimName,
+    DefaultAllocator: Allocator<GF2, D, D> + Allocator<GF2, D>,
 {
-    let iter = (0..D::dim())
-        .map(|n| GF2::from((k >> n) & 1));
-    OVector::<GF2, D>::from_iterator(iter)
-}
-
-pub fn get_orthogonal_matrix<D: DimName>(i: usize) -> OMatrix::<GF2, D, D>
-where 
-    DefaultAllocator: Allocator<GF2, D, D>
-{
-    let n = D::dim() as u32;
-    let ord = group_order(n);
-    let base: usize = 2;
+    let n = D::dim();
+    let ord = get_group_order(n);
 
     assert!(i < ord);
 
-    let mut o: OMatrix<GF2, D, D> = OMatrix::<GF2, D, D>::zeros();
+    let s1 = usize::pow(2, (n - 1) as u32);
+    let s2 = usize::pow(2, (n - 2) as u32) - 1;
 
-    let s: usize = base.pow(n);
-    let mut k = i % s;
-    k = if k.count_ones() % 2 == 0 {k | s} else {k};
+    let b1 = i % s1;
+    let b2 = if s2 > 0 {(i / s1) % s2} else {0};
 
-    let v = (0..n).map(|n| (k >> n) & 1);
+    let iter1 = get_odd_bit_iter(n, b1);
+    let v1 = OVector::<GF2, D>::from_iterator(iter1);
+
+    let iter2 = vec![GF2::zero()].into_iter().chain(get_odd_bit_iter(n-1, b2));
+    let v2 = OVector::<GF2, D>::from_iterator(iter2);
 
 
-    
-    let b1 = o.column_mut(0);
-    let b2 = o.column_mut(1);
-    
+    println!("{}, {}", v1, v2);
+    // let b1 = get_odd_bit_vector::<D>(i % s);
+
+    let o: OMatrix<GF2, D, D> = OMatrix::<GF2, D, D>::identity();
+
     return o
 }
