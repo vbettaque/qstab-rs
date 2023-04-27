@@ -1,6 +1,6 @@
-use std::ops::BitOr;
+use std::iter::Map;
 
-use nalgebra::{DimName, allocator::Allocator, DefaultAllocator, OMatrix};
+use nalgebra::{DimName, allocator::Allocator, DefaultAllocator, OMatrix, OVector, U1};
 
 use crate::fields::GF2;
 
@@ -15,6 +15,16 @@ fn group_order(n: u32) -> usize {
         order *= base.pow(2*i) - 1;
     }
     order
+}
+
+/// Returns the D first bits in the binary representation of k 
+pub fn get_bit_vector<D: DimName>(k: usize) -> OVector<GF2, D>
+where
+    DefaultAllocator: Allocator<GF2, D, U1>
+{
+    let iter = (0..D::dim())
+        .map(|n| GF2::from((k >> n) & 1));
+    OVector::<GF2, D>::from_iterator(iter)
 }
 
 pub fn get_orthogonal_matrix<D: DimName>(i: usize) -> OMatrix::<GF2, D, D>
