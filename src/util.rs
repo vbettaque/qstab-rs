@@ -7,12 +7,12 @@ pub fn get_bit_iter(n: usize, k: usize) -> impl Iterator<Item = GF2> {
 }
 
 /// Returns the (k+1)th odd-parity vector of length n. Panics if k >= 2^(n-1).
-/// In the case of even n the last vector (k = 2^(n-1) - 1) is always of the
-/// form \[0, 1, 1, ..., 1\]
 pub fn get_odd_bit_iter(n: usize, i: usize) -> impl Iterator<Item = GF2> {
-    assert!(i < usize::pow(2, (n-1) as u32), 
+    assert!(
+        i < usize::pow(2, (n-1) as u32), 
         "Parity vector index i = {} out of bounds for D = {}.
-        i must be smaller than 2^(D-1)", i, n);
+        i must be smaller than 2^(D-1)", i, n
+    );
     let k = i << 1 | (if i.count_ones() % 2 == 0 {1} else {0});
     return get_bit_iter(n, k);
 }

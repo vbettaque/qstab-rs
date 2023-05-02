@@ -1,5 +1,6 @@
 use std::fmt;
 use num_traits::{Num, One, Zero, PrimInt};
+use rand::{prelude::Distribution, distributions::Standard};
 use std::ops::{
     Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Rem,
     RemAssign, Neg
@@ -71,9 +72,10 @@ impl Div<Self> for GF2 {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
-        if rhs.is_zero() {
-            panic!("Zero is an invalid divisor!");
-        }
+        assert!(
+            rhs.is_zero(),
+            "Zero is an invalid divisor!"
+        );
         self
     }
 }
@@ -92,9 +94,10 @@ impl Rem<Self> for GF2 {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self::Output {
-        if rhs.is_zero() {
-            panic!("Zero is an invalid divisor!");
-        }
+        assert!(
+            rhs.is_zero(),
+            "Zero is an invalid divisor!"
+        );
         GF2::zero()
     }
 }
@@ -141,5 +144,11 @@ impl<T> From<T> for GF2 where T: PrimInt {
         let two = T::from(2).unwrap();
         let bin = (((val % two) + two) % two).to_u8().unwrap();
         GF2(bin)
+    }
+}
+
+impl Distribution<GF2> for Standard {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> GF2 {
+        GF2(rng.gen_bool(0.5).into())
     }
 }
