@@ -1,7 +1,7 @@
-use nalgebra::{Storage, Dim, DefaultAllocator, allocator::Allocator, Matrix, OMatrix};
+use nalgebra::{allocator::Allocator, DefaultAllocator, Dim, Matrix, OMatrix, Storage};
 use num_traits::{One, Zero};
 
-use crate::fields::GF2;
+use crate::math::GF2;
 
 pub trait Binary<T: One + Zero> {
     type Output;
@@ -19,10 +19,10 @@ where
     type Output = OMatrix<GF2, R, C>;
 
     fn parity(&self) -> GF2 {
-        return self.fold(GF2::zero(), |acc, x| acc + x)
+        self.fold(GF2::zero(), |acc, x| acc + x)
     }
 
     fn complement(&self) -> Self::Output {
-         self.add_scalar(GF2::one()).into()
+        self.add_scalar(GF2::one())
     }
 }

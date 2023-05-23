@@ -1,7 +1,10 @@
-use nalgebra::{Field, Matrix, Dim, Storage, Scalar};
-use nalgebra::constraint::{ShapeConstraint, DimEq};
+use nalgebra::constraint::{DimEq, ShapeConstraint};
+use nalgebra::{Dim, Field, Matrix, Scalar, Storage};
 
-pub trait Symplectic<T, R: Dim, C: Dim, SB> where SB: Storage<T, R, C> {
+pub trait Symplectic<T, R: Dim, C: Dim, SB>
+where
+    SB: Storage<T, R, C>,
+{
     fn symp<R2: Dim, C2: Dim, SB2>(&self, rhs: &Matrix<T, R2, C2, SB2>) -> T
     where
         T: Scalar + Field,
@@ -18,7 +21,7 @@ where
     fn symp<R2: Dim, C2: Dim, SB2>(&self, rhs: &Matrix<T, R2, C2, SB2>) -> T
     where
         SB2: Storage<T, R2, C2>,
-        ShapeConstraint: DimEq<R, R2> + DimEq<C, C2>
+        ShapeConstraint: DimEq<R, R2> + DimEq<C, C2>,
     {
         assert_eq!(
             self.nrows() % 2, 0,
@@ -31,16 +34,14 @@ where
             self.nrows(), rhs.nrows(),
             "Symplectic product dimensions mismatch for shapes {:?} and {:?}:
                 left rows != right rows.",
-            self.shape(),
-            rhs.shape(),
+            self.shape(), rhs.shape(),
         );
-    
+
         assert_eq!(
             self.ncols(), rhs.ncols(),
             "Symplectic product dimensions mismatch for shapes {:?} and {:?}:
                 left cols != right cols.",
-            self.shape(),
-            rhs.shape(),
+            self.shape(), rhs.shape(),
         );
 
         let size = self.len() / 2;
